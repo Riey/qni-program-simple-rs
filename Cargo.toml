@@ -4,6 +4,9 @@ version = "0.1.0"
 authors = ["Riey <creeper844@gmail.com>"]
 edition = "2018"
 
+[features]
+ws-ssl = ["qni-connector-ws-rs/ssl"]
+
 [lib]
 name = "qni_program_simple"
 crate-type = ["cdylib", "dylib", "rlib"]
@@ -11,11 +14,8 @@ crate-type = ["cdylib", "dylib", "rlib"]
 [profile.release]
 lto = true
 
-# [dependencies.qni-core-rs]
-# git = "https://github.com/Riey/qni-core-rs"
-
 [dependencies.qni-connector-ws-rs]
-path = "../qni-connector-ws-rs"
+git = "https://github.com/Riey/qni-connector-ws-rs"
 
 [dependencies]
 log = "*"

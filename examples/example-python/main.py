@@ -1,8 +1,14 @@
 import threading
 import qni_binding
+import sys
 
-QNI = qni_binding.QniBinding('../../target/debug/libqni_program_simple.so')
+qni_lib_path = '../../target/debug/libqni_program_simple.so'
 
+if len(sys.argv) > 1:
+    qni_lib_path = sys.argv[1]
+
+
+QNI = qni_binding.QniBinding(qni_lib_path)
 QNI.init_program()
 
 
