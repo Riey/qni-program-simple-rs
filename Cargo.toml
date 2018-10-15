@@ -1,0 +1,22 @@
+[package]
+name = "qni-program-simple-rs"
+version = "0.1.0"
+authors = ["Riey <creeper844@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "qni_program_simple"
+crate-type = ["cdylib", "dylib", "rlib"]
+
+[profile.release]
+lto = true
+
+# [dependencies.qni-core-rs]
+# git = "https://github.com/Riey/qni-core-rs"
+
+[dependencies.qni-connector-ws-rs]
+path = "../qni-connector-ws-rs"
+
+[dependencies]
+log = "*"
+pretty_env_logger = "*"
