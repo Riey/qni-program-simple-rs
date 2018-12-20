@@ -1,6 +1,8 @@
 import threading
 import qni_binding
 import sys
+import os
+import signal
 
 qni_lib_path = '../../target/debug/libqni_program_simple.so'
 
@@ -40,7 +42,7 @@ def entry(ctx):
         return
 
     finally:
-        QNI.console_exit(ctx)
+        os.kill(os.getpid(), signal.SIGINT)
 
 
 def start_connector(hub):
@@ -48,6 +50,8 @@ def start_connector(hub):
 
 
 ctx = QNI.console_new()
+
+signal.signal(signal.SIGINT, lambda signum, frame: QNI.console_exit(ctx))
 
 connector_thrd = threading.Thread(
     target=start_connector, args=[ctx]
@@ -61,15 +65,17 @@ game_thrd = threading.Thread(
 
 game_thrd.start()
 
-while True:
-    user_input = input('Input Q to exit...\n')
+try:
+    while True:
+        user_input = input('Input Q to exit...\n')
 
-    if user_input is 'Q':
-        break
+        if user_input is 'Q':
+            os.kill(os.getpid(), signal.SIGINT)
+            break
+except KeyboardInterrupt:
+    pass
 
-QNI.console_exit(ctx)
-
-print('Wait for connector exit...')
+print('Wait for connector exit ...')
 
 connector_thrd.join()
 
