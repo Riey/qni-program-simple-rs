@@ -1,6 +1,10 @@
 import ctypes
 from ctypes import cdll, c_void_p, c_float, c_int, c_uint, c_char_p, c_uint16, c_ubyte, c_uint32, c_int32, c_size_t, byref, POINTER
 
+WAIT_OK = 0
+WAIT_TIMEOUT = 1
+WAIT_EXITED = -1
+
 TEXT_ALIGN_LEFT = 0
 TEXT_ALIGN_RIGHT = 1
 TEXT_ALIGN_CENTER = 2
@@ -10,9 +14,6 @@ FONT_STYLE_ITALIC = 1,
 FONT_STYLE_BOLD = 2,
 FONT_STYLE_UNDERLINE = 4
 
-QNI_ENTRY_CALLBACK = ctypes.CFUNCTYPE(None, c_void_p)
-
-
 class QniEndError(Exception):
     pass
 
@@ -21,13 +22,17 @@ class QniBinding():
     def __init__(self, path: str):
         self.lib = cdll.LoadLibrary(path)
 
-        self.lib.qni_init_program.argtypes = []
-        self.lib.qni_init_program.restype = None
+        self.lib.qni_program_init.argtypes = []
+        self.lib.qni_program_init.restype = None
 
-        self.lib.qni_hub_new.argtypes = [QNI_ENTRY_CALLBACK]
-        self.lib.qni_hub_new.restype = c_void_p
-        self.lib.qni_hub_exit.argtypes = [c_void_p]
-        self.lib.qni_hub_delete.argtypes = [c_void_p]
+        self.lib.qni_console_new.argtypes = []
+        self.lib.qni_console_new.restype = c_void_p
+
+        self.lib.qni_console_delete.argtypes = [c_void_p]
+        self.lib.qni_console_delete.restype = None
+
+        self.lib.qni_console_exit.argtypes = [c_void_p]
+        self.lib.qni_console_exit.restype = None
 
         c_byte_p = c_char_p  # POINTER(c_ubyte)
 
@@ -45,27 +50,27 @@ class QniBinding():
         self.lib.qni_wait_int.argtypes = [c_void_p, POINTER(c_int32)]
         self.lib.qni_wait_int.restype = c_int32
 
-        self.lib.qni_start_program.argtypes = [
+        self.lib.qni_program_start.argtypes = [
             c_void_p, c_byte_p, c_size_t]
 
-        self.lib.qni_start_program.restype = c_int32
+        self.lib.qni_program_start.restype = c_int32
 
-    def init_program(self):
-        self.lib.qni_init_program()
+    def program_init(self):
+        self.lib.qni_program_init()
 
-    def hub_new(self, entry: QNI_ENTRY_CALLBACK):
-        return self.lib.qni_hub_new(entry)
+    def console_new(self):
+        return self.lib.qni_console_new()
 
-    def hub_exit(self, hub: c_void_p):
-        self.lib.qni_hub_exit(hub)
+    def console_delete(self, ctx: c_void_p):
+        self.lib.qni_console_delete(ctx)
 
-    def hub_delete(self, hub: c_void_p):
-        self.lib.qni_hub_delete(hub)
+    def console_exit(self, ctx: c_void_p):
+        self.lib.qni_console_exit(ctx)
 
     def wait_int(self, ctx: c_void_p):
         ret = c_int32()
 
-        if self.lib.qni_wait_int(ctx, byref(ret)) is -1:
+        if self.lib.qni_wait_int(ctx, byref(ret)) is WAIT_EXITED:
             raise QniEndError()
 
         return ret.value
@@ -113,4 +118,4 @@ class QniBinding():
 
     def connector_ws_start(self, hub: c_void_p, host: str):
         host = host.encode('utf-8')
-        return self.lib.qni_start_program(hub, host, len(host))
+        return self.lib.qni_program_start(hub, host, len(host))

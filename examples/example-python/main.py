@@ -9,7 +9,7 @@ if len(sys.argv) > 1:
 
 
 QNI = qni_binding.QniBinding(qni_lib_path)
-QNI.init_program()
+QNI.program_init()
 
 
 def entry(ctx):
@@ -39,17 +39,27 @@ def entry(ctx):
     except qni_binding.QniEndError:
         return
 
+    finally:
+        QNI.console_exit(ctx)
+
 
 def start_connector(hub):
     return QNI.connector_ws_start(hub, "127.0.0.1:4434")
 
 
-hub = QNI.hub_new(qni_binding.QNI_ENTRY_CALLBACK(entry))
+ctx = QNI.console_new()
 
 connector_thrd = threading.Thread(
-    target=start_connector, args=[hub])
+    target=start_connector, args=[ctx]
+)
 
 connector_thrd.start()
+
+game_thrd = threading.Thread(
+    target=entry, args=[ctx]
+)
+
+game_thrd.start()
 
 while True:
     user_input = input('Input Q to exit...\n')
@@ -57,10 +67,14 @@ while True:
     if user_input is 'Q':
         break
 
-QNI.hub_exit(hub)
+QNI.console_exit(ctx)
 
 print('Wait for connector exit...')
 
 connector_thrd.join()
 
-QNI.hub_delete(hub)
+print('Wait for game exit ...')
+
+game_thrd.join()
+
+QNI.console_delete(ctx)

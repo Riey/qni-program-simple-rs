@@ -9,14 +9,13 @@ ws-ssl = ["qni-connector-ws-rs/ssl"]
 
 [lib]
 name = "qni_program_simple"
-crate-type = ["cdylib", "dylib", "rlib"]
+crate-type = ["cdylib", "rlib"]
 
 [profile.release]
 lto = true
 
-[dependencies.qni-connector-ws-rs]
-git = "https://github.com/Riey/qni-connector-ws-rs"
-
 [dependencies]
-log = "*"
-pretty_env_logger = "*"
+log = "0.4.6"
+pretty_env_logger = "0.3.0"
+qni-connector-ws-rs = "0.2.3"
+qni-core-rs = "0.2.2"
