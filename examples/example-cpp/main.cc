@@ -19,6 +19,7 @@ void qni_entry(void *ctx)
   int32_t sum = 0;
 
   qni_print_line_cpp(ctx, "-1을 입력하면 종료합니다");
+  qni_draw_line(ctx);
 
   while (true)
   {

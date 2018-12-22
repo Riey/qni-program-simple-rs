@@ -30,7 +30,10 @@ extern "C"
   void qni_set_back_color(void *ctx, uint32_t color);
   void qni_set_highlight_color(void *ctx, uint32_t color);
 
+  void qni_str_delete(uint8_t* ptr, size_t len, size_t cap);
+
   QNI_WAIT_RESULT qni_wait_int(void *ctx, int32_t *ret);
+  QNI_WAIT_RESULT qni_wait_str(void *ctx, uint8_t **ret, size_t* ret_len, size_t* ret_cap);
 
   void qni_program_init();
   int32_t qni_program_start(void *ctx, char const *host, size_t host_len);

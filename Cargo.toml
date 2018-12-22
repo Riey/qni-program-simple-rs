@@ -17,5 +17,5 @@ lto = true
 [dependencies]
 log = "0.4.6"
 pretty_env_logger = "0.3.0"
-qni-connector-ws-rs = "0.2.3"
-qni-core-rs = "0.2.2"
+qni-connector-ws-rs = "0.2.5"
+qni-core-rs = "0.2.5"
